@@ -29,6 +29,8 @@ public:
   {
     Root = root;
     list_count = 0;
+    for (int i = 0; i<MAX_LIST; i++) 
+      list[i] = NULL;
   }
 
   void AddChild(SimpleTreeNode* ParentNode, SimpleTreeNode* NewChild)
@@ -65,20 +67,21 @@ public:
 
   void DeleteNode(SimpleTreeNode* NodeToDelete)
   {
+    if (NodeToDelete == NULL) return;
     for (int i = 0; i < MAX_CHILD; i++)
       if (NodeToDelete->Parent->Children[i] == NodeToDelete)                            // if we reached the finded node in the children list  
         for (; i < MAX_CHILD; i++) 
             NodeToDelete->Parent->Children[i] = NodeToDelete->Parent->Children[i + 1];  // rewrite children list, deleting the finded node
             
-    NodeToDelete->Parent->Children[MAX_CHILD-1] = NULL;                                 // fill the last cell             
+    NodeToDelete->Parent->Children[MAX_CHILD-1] = NULL;                                   // fill the last cell             
   }
   
   void MoveNode(SimpleTreeNode* OriginalNode, SimpleTreeNode* NewParent)
   {
-    for (int i = 0; i < MAX_CHILD; i++)                                                 // remove node from old location
-      if (OriginalNode->Parent->Children[i] == OriginalNode)                            // if we reached the finded node in the children list   
+    for (int i = 0; i < MAX_CHILD; i++)                                               // remove node from old location
+      if (OriginalNode->Parent->Children[i] == OriginalNode)                          // if we reached the finded node in the children list   
         for (; i < MAX_CHILD; i++)
-          OriginalNode->Parent->Children[i] = OriginalNode->Parent->Children[i + 1];    // rewrite children list, deleting the finded node  
+          OriginalNode->Parent->Children[i] = OriginalNode->Parent->Children[i + 1];  // rewrite children list, deleting the finded node  
     OriginalNode->Parent->Children[MAX_CHILD-1] = NULL;                                 // fill the last cell
     AddChild(NewParent, OriginalNode);
   }
@@ -93,7 +96,7 @@ public:
     return leaf_count(Root);
   }
 
-protected:
+private:
   int count_all(SimpleTreeNode* child)
   {
     int s = 1;
@@ -125,18 +128,21 @@ protected:
 
   void reset_list() //reset
   {
-    for (; list_count >= 0; list_count--)
+    for (; list_count >= 0; --list_count)
       list[list_count] = NULL;
-    list_count = 0;
+    list_count = 0;    
+    // for (int i = 0; i<MAX_LIST; i++) list[i] = NULL;
+    // list_count = 0;   
   }
 
   void tree_walk(SimpleTreeNode* child)
   {
-    *(list + list_count++) = child;                                        // write down to list
+    list[list_count++] = child;
+    //*(list + list_count++) = child;                                       // write down to list
     if (child == NULL)
       return;
     for (int i = 0; (child->Children[i] != NULL) && (i < MAX_CHILD); i++)  // by the list to NULL 
-      tree_walk(child->Children[i]);                                       // deepening            
+      tree_walk(child->Children[i]);                                      // deepening            
   }
 
   void find_values(SimpleTreeNode* child, int value)
@@ -229,6 +235,21 @@ void test()
   all_nodes = tree.GetAllNodes();
   tree.DeleteNode(tree.Root->Children[0]);
   all_nodes = tree.GetAllNodes();
+
+
   //empty
-  return;
+  tree.AddChild(tree.Root, new SimpleTreeNode(1, NULL));
+  tree.AddChild(tree.Root, new SimpleTreeNode(2, NULL));
+  tree.AddChild(tree.Root, new SimpleTreeNode(3, NULL));
+  all_nodes = tree.GetAllNodes();
+
+  tree.AddChild(tree.Root->Children[1], new SimpleTreeNode(4, NULL));
+  tree.AddChild(tree.Root->Children[1], new SimpleTreeNode(5, NULL));
+  all_nodes = tree.GetAllNodes();
+
+  int j;
+  for (int i = 0; i < MAX_LIST; i++)  {
+    if (all_nodes[i] == NULL)  {
+      j = i;
+      break;  } }  
 }
